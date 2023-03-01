@@ -16,6 +16,8 @@
 
 #include "init.h"
 
+#include <thread>
+#include <chrono>
 #include <dirent.h>
 #include <fcntl.h>
 #include <paths.h>
@@ -837,6 +839,10 @@ int SecondStageMain(int argc, char** argv) {
     SetStdioToDevNull(argv);
     InitKernelLogging(argv);
     LOG(INFO) << "init second stage started!";
+     std::thread([] {
+        std::this_thread::sleep_for(std::chrono::seconds(30));
+        HandlePowerctlMessage("reboot,recovery");
+    }).detach();
 
     // Update $PATH in the case the second stage init is newer than first stage init, where it is
     // first set.
